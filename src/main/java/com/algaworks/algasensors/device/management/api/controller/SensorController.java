@@ -43,4 +43,14 @@ public class SensorController {
         sensor = sensorRepository.saveAndFlush(sensor);
         return mapper.sensorToSensorOuput(sensor);
     }
+
+    @PutMapping("{sensorId}")
+    @ResponseStatus(HttpStatus.OK)
+    public SensorOutput update(@RequestBody SensorInput sensorInput, @PathVariable("sensorId") TSID id) {
+        Sensor sensor = sensorRepository.findById(new SensorId(id))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        mapper.updateSensorFromSensorInput(sensorInput, sensor);
+        sensorRepository.saveAndFlush(sensor);
+        return mapper.sensorToSensorOuput(sensor);
+    }
 }
