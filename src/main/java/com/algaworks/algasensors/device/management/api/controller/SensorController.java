@@ -53,4 +53,12 @@ public class SensorController {
         sensorRepository.saveAndFlush(sensor);
         return mapper.sensorToSensorOuput(sensor);
     }
+
+    @DeleteMapping("{sensorId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable("sensorId") TSID id) {
+        Sensor sensor = sensorRepository.findById(new SensorId(id))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        sensorRepository.delete(sensor);
+    }
 }
