@@ -1,9 +1,11 @@
 package com.algaworks.algasensors.device.management.api.client.impl;
 
 import com.algaworks.algasensors.device.management.api.client.SensorMonitoringClient;
+import com.algaworks.algasensors.device.management.api.client.SensorMonitoringClientBadGatewayException;
 import io.hypersistence.tsid.TSID;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -30,7 +32,11 @@ public class SensorMonitoringClientImpl implements SensorMonitoringClient {
      * baseurl estaria null*/
     @PostConstruct
     public void init() {
-        this.restClient = builder.baseUrl(baseUrl).build();
+        this.restClient = builder.baseUrl(baseUrl)
+                .defaultStatusHandler(HttpStatusCode::isError, (request, response) -> {
+                    throw new SensorMonitoringClientBadGatewayException();
+                })
+                .build();
     }
 
     @Override
